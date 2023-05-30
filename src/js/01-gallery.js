@@ -2,60 +2,33 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 // Add imports above this line
 import { galleryItems } from './gallery-items';
+
 // Change code below this line
 
-console.log(galleryItems);
-const gallery = document.querySelector('.gallery');
-let modalInstance = null;
+const galleryContainer = document.querySelector('.gallery');
+const itemsMarkup = createGalleryItemsMarkup(galleryItems);
+galleryContainer.insertAdjacentHTML('beforeend', itemsMarkup);
 
-gallery.addEventListener('click', onImgClick);
-
-function onImgClick(e) {
-  e.preventDefault();
-
-  if (!e.target.classList.contains('gallery__image')) {
-    return;
-  }
-
-  const largeImageUrl = e.target.dataset.source;
-
-  const modalContent = `<img src="${largeImageUrl}" alt="Large Image">`;
-  modalInstance = basicLightbox.create(modalContent);
-  modalInstance.show();
-
-  document.addEventListener('keydown', onKeyDown);
-}
-
-function onKeyDown(e) {
-  if (e.key === 'Escape') {
-    closeModal();
-  }
-}
-
-function closeModal() {
-  if (modalInstance) {
-    modalInstance.close();
-    modalInstance = null;
-    document.removeEventListener('keydown', onKeyDown);
-  }
-}
-
-const imgMarkup = createGallery(galleryItems);
-gallery.insertAdjacentHTML('beforeend', imgMarkup);
-
-function createGallery(galleryItems) {
-  return galleryItems
+// rendered items
+function createGalleryItemsMarkup(items) {
+  return items
     .map(({ preview, original, description }) => {
-      return `<li class="gallery__item">
-  <a class="gallery__link" href="${original}">
+      return `
+  <a class="gallery__item" href="${original}">
     <img
       class="gallery__image"
       src="${preview}"
-      data-source="${original}"
       alt="${description}"
     />
   </a>
-</li>`;
+`;
     })
     .join('');
 }
+
+// use library SimpleLightbox
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});
